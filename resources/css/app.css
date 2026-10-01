@@ -2,8 +2,101 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../../app/**/*.php';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Aurora Grand design tokens.
+ * Semantic colors switch between light (ivory) and dark (midnight) themes.
+ */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, serif;
+
+    --color-page: var(--c-page);
+    --color-surface: var(--c-surface);
+    --color-elevated: var(--c-elevated);
+    --color-ink: var(--c-ink);
+    --color-muted: var(--c-muted);
+    --color-line: var(--c-line);
+
+    --color-gold-50: #fbf7ee;
+    --color-gold-100: #f3e9d2;
+    --color-gold-200: #e7d3a6;
+    --color-gold-300: #d9ba78;
+    --color-gold-400: #cba65a;
+    --color-gold-500: #b8914a;
+    --color-gold-600: #9a763a;
+    --color-gold-700: #7a5c2f;
+    --color-gold-800: #5c4625;
+    --color-gold-900: #3d2f19;
+
+    --color-midnight-800: #121a24;
+    --color-midnight-900: #0b1118;
+    --color-midnight-950: #070b10;
+}
+
+:root {
+    --c-page: #faf8f3;
+    --c-surface: #ffffff;
+    --c-elevated: #f3efe6;
+    --c-ink: #17150f;
+    --c-muted: #6b665c;
+    --c-line: #e6e0d3;
+    color-scheme: light;
+}
+
+.dark {
+    --c-page: #0b1118;
+    --c-surface: #121a24;
+    --c-elevated: #18222e;
+    --c-ink: #ece7dc;
+    --c-muted: #9a978f;
+    --c-line: #253140;
+    color-scheme: dark;
+}
+
+@layer base {
+    html { scroll-behavior: smooth; }
+    body { @apply bg-page text-ink font-sans antialiased; }
+    h1, h2, h3, .font-display { @apply font-serif tracking-tight; }
+    [x-cloak] { display: none !important; }
+    ::selection { @apply bg-gold-300 text-midnight-900; }
+}
+
+@layer components {
+    .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+    .section { @apply py-16 sm:py-24; }
+    .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.25em] text-gold-500; }
+    .h-display { @apply font-serif text-4xl leading-[1.05] sm:text-5xl lg:text-6xl; }
+    .h-section { @apply font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl; }
+    .lead { @apply text-base leading-relaxed text-muted sm:text-lg; }
+
+    .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:cursor-not-allowed disabled:opacity-50; }
+    .btn-gold { @apply btn bg-gold-500 text-white shadow-lg shadow-gold-500/20 hover:bg-gold-600; }
+    .btn-dark { @apply btn bg-midnight-900 text-white hover:bg-midnight-800 dark:bg-gold-100 dark:text-midnight-900 dark:hover:bg-gold-200; }
+    .btn-outline { @apply btn border border-line text-ink hover:border-gold-500 hover:text-gold-600 dark:hover:text-gold-300; }
+    .btn-ghost-light { @apply btn border border-white/40 text-white backdrop-blur hover:bg-white/10; }
+    .btn-sm { @apply px-4 py-2 text-xs; }
+
+    .card { @apply rounded-2xl border border-line bg-surface shadow-sm; }
+    .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+    .badge-gold { @apply badge bg-gold-100 text-gold-800 dark:bg-gold-900/60 dark:text-gold-200; }
+    .badge-green { @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300; }
+    .badge-red { @apply badge bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-300; }
+    .badge-gray { @apply badge bg-elevated text-muted; }
+
+    .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted; }
+    .input { @apply block w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink placeholder:text-muted/70 transition focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 focus:outline-none; }
+    .input-error { @apply mt-1 text-xs text-rose-600 dark:text-rose-400; }
+    .link { @apply text-gold-600 underline-offset-4 hover:underline dark:text-gold-300; }
+
+    .prose-hotel h3 { @apply mt-6 mb-2 font-serif text-2xl; }
+    .prose-hotel p { @apply mb-4 leading-relaxed text-muted; }
+    .prose-hotel ul { @apply mb-4 list-disc space-y-1 pl-5 text-muted; }
+
+    /* Shown instead of an image that fails to load (see layout script). */
+    .img-fallback { background: linear-gradient(135deg, #1b2633 0%, #3d2f19 55%, #b8914a 130%); }
 }
