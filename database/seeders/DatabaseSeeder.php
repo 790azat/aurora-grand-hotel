@@ -16,12 +16,15 @@ use App\Models\Review;
 use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\Season;
+use App\Models\Setting;
 use App\Models\Subscriber;
 use App\Models\User;
 use App\Services\BookingService;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class DatabaseSeeder extends Seeder
 {
@@ -31,6 +34,14 @@ class DatabaseSeeder extends Seeder
     }
 
     public function run(): void
+    {
+        // Seeding confirms bookings; don't render/send confirmation emails for them.
+        Mail::fake();
+        DB::transaction(fn () => $this->seed());
+        Setting::put('demo_date', now()->toDateString());
+    }
+
+    protected function seed(): void
     {
         mt_srand(2026);
         $img = fn ($id, $w = 1600) => self::img($id, $w);
@@ -105,8 +116,8 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'junior-suite', 'name_en' => 'Junior Suite', 'name_ru' => 'Джуниор-сюит',
                 'short_en' => 'Open-plan suite with a freestanding bathtub and sea views.',
                 'short_ru' => 'Сюит открытой планировки с отдельно стоящей ванной и видом на море.',
-                'description_en' => "A romantic open-plan suite with a freestanding bathtub facing the sea, a lounge area and a curated minibar. Evening turndown service and a bottle of sparkling wine on arrival are included.",
-                'description_ru' => "Романтичный сюит открытой планировки с отдельно стоящей ванной у окна с видом на море, лаунж-зоной и авторским мини-баром. Включены вечерняя подготовка номера и бутылка игристого при заезде.",
+                'description_en' => 'A romantic open-plan suite with a freestanding bathtub facing the sea, a lounge area and a curated minibar. Evening turndown service and a bottle of sparkling wine on arrival are included.',
+                'description_ru' => 'Романтичный сюит открытой планировки с отдельно стоящей ванной у окна с видом на море, лаунж-зоной и авторским мини-баром. Включены вечерняя подготовка номера и бутылка игристого при заезде.',
                 'base_price' => 340, 'weekend_price' => 390, 'max_adults' => 2, 'max_children' => 1, 'size_m2' => 55,
                 'beds_en' => '1 Emperor bed', 'beds_ru' => '1 кровать emperor-size',
                 'view_en' => 'Panoramic sea view', 'view_ru' => 'Панорамный вид на море',
@@ -117,8 +128,8 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'presidential-suite', 'name_en' => 'Presidential Suite', 'name_ru' => 'Президентский люкс',
                 'short_en' => 'The crown jewel: 180 m² penthouse with a private pool.',
                 'short_ru' => 'Жемчужина отеля: пентхаус 180 м² с личным бассейном.',
-                'description_en' => "Occupying the entire top floor, the Presidential Suite offers a private infinity pool, a terrace with 270° views, a dining room for eight and 24-hour butler service. Airport transfer by limousine is included.",
-                'description_ru' => "Президентский люкс занимает весь верхний этаж: личный инфинити-бассейн, терраса с обзором 270°, столовая на восемь персон и круглосуточный дворецкий. Трансфер из аэропорта на лимузине включён.",
+                'description_en' => 'Occupying the entire top floor, the Presidential Suite offers a private infinity pool, a terrace with 270° views, a dining room for eight and 24-hour butler service. Airport transfer by limousine is included.',
+                'description_ru' => 'Президентский люкс занимает весь верхний этаж: личный инфинити-бассейн, терраса с обзором 270°, столовая на восемь персон и круглосуточный дворецкий. Трансфер из аэропорта на лимузине включён.',
                 'base_price' => 1450, 'weekend_price' => 1650, 'max_adults' => 4, 'max_children' => 2, 'size_m2' => 180,
                 'beds_en' => '2 King bedrooms', 'beds_ru' => '2 спальни с кроватями king-size',
                 'view_en' => '270° sea panorama', 'view_ru' => 'Панорама моря 270°',
@@ -129,8 +140,8 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'beach-villa', 'name_en' => 'Beach Villa', 'name_ru' => 'Пляжная вилла',
                 'short_en' => 'Private villa steps from the sand with its own plunge pool.',
                 'short_ru' => 'Частная вилла в шаге от пляжа с собственным бассейном.',
-                'description_en' => "Hidden among palm trees, each Beach Villa has a private garden, plunge pool, outdoor rain shower and direct beach access. Breakfast is served on your terrace every morning.",
-                'description_ru' => "Спрятанная среди пальм, каждая вилла имеет частный сад, бассейн, уличный тропический душ и прямой выход на пляж. Завтрак каждое утро подают на вашу террасу.",
+                'description_en' => 'Hidden among palm trees, each Beach Villa has a private garden, plunge pool, outdoor rain shower and direct beach access. Breakfast is served on your terrace every morning.',
+                'description_ru' => 'Спрятанная среди пальм, каждая вилла имеет частный сад, бассейн, уличный тропический душ и прямой выход на пляж. Завтрак каждое утро подают на вашу террасу.',
                 'base_price' => 780, 'weekend_price' => 880, 'max_adults' => 4, 'max_children' => 2, 'size_m2' => 120,
                 'beds_en' => '2 King bedrooms', 'beds_ru' => '2 спальни king-size',
                 'view_en' => 'Beachfront', 'view_ru' => 'Первая линия пляжа',
@@ -188,7 +199,7 @@ class DatabaseSeeder extends Seeder
         $roomTypes = RoomType::all();
         $today = CarbonImmutable::today();
 
-        for ($i = 0; $i < 420; $i++) {
+        for ($i = 0; $i < 1300; $i++) {
             $type = $roomTypes[mt_rand(0, 9) < 7 ? mt_rand(0, 3) : mt_rand(0, $roomTypes->count() - 1)];
             $checkIn = $today->addDays(mt_rand(-360, 90));
             $nights = mt_rand(1, 7);
@@ -262,7 +273,7 @@ class DatabaseSeeder extends Seeder
                 'adults' => 2, 'children' => 0, 'first_name' => 'Guest', 'last_name' => 'Demo', 'email' => $guest->email,
                 'phone' => $guest->phone, 'country' => $guest->country, 'user_id' => $guest->id, 'payment_method' => 'card',
             ], [$extras[0]->id => 1]);
-            $b->forceFill(['status' => $status, 'payment_status' => 'paid', 'amount_paid' => $b->total, 'confirmed_at' => now(),
+            $b->forceFill(['status' => $status, 'payment_status' => 'paid', 'amount_paid' => $b->total, 'confirmed_at' => $in->subDays(30), 'created_at' => $in->subDays(30),
                 'checked_out_at' => $status === 'checked_out' ? $in->addDays($nights) : null])->save();
             $b->payments()->create(['amount' => $b->total, 'method' => 'card', 'status' => 'succeeded', 'transaction_id' => 'demo_guest'.$b->id, 'card_brand' => 'Visa', 'card_last4' => '4242']);
         }

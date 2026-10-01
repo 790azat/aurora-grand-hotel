@@ -11,6 +11,7 @@ use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\Season;
 use App\Models\Setting;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
@@ -328,5 +329,144 @@ class BookingService
             (bool) preg_match('/^3[47]/', $digits) => 'Amex',
             default => 'Card',
         };
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Guest access, invoices, calendar (website booking engine)
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Whether the current visitor may view/pay/download a booking:
+     * the reference is remembered in this session, the user owns it, or the user is staff.
+     */
+    public function canAccess(Booking $booking): bool
+    {
+        if (in_array($booking->reference, session('my_bookings', []), true)) {
+            return true;
+        }
+
+        // Signed links from the confirmation email grant access (and remember it for this session).
+        $request = request();
+        if ($request->query('signature') && str_contains($request->path(), $booking->reference) && $request->hasValidSignature()) {
+            $this->rememberAccess($booking);
+
+            return true;
+        }
+
+        $user = auth()->user();
+
+        return $user && ($user->isStaff() || ($booking->user_id && $booking->user_id === $user->id));
+    }
+
+    /** Remember a booking in the visitor's session (after creating it or a successful lookup). */
+    public function rememberAccess(Booking $booking): void
+    {
+        $refs = session('my_bookings', []);
+        if (! in_array($booking->reference, $refs, true)) {
+            $refs[] = $booking->reference;
+            session(['my_bookings' => array_slice($refs, -20)]);
+        }
+    }
+
+    /** Render the invoice PDF for a booking, localized to $locale (defaults to the booking locale). */
+    public function invoicePdf(Booking $booking, ?string $locale = null): string
+    {
+        $locale ??= $booking->locale ?: app()->getLocale();
+        $previous = app()->getLocale();
+        app()->setLocale($locale);
+
+        // Serverless-friendly: dompdf writes font metrics/temp files to the system temp dir.
+        foreach ([config('dompdf.options.font_cache'), config('dompdf.options.temp_dir')] as $dir) {
+            if ($dir && ! is_dir($dir)) {
+                @mkdir($dir, 0775, true);
+            }
+        }
+
+        try {
+            $booking->loadMissing(['roomType', 'room', 'extras', 'payments', 'promoCode']);
+            $nightly = $this->quote($booking->roomType, $booking->check_in, $booking->check_out, $booking->adults, $booking->children)['nightly'];
+
+            return Pdf::loadView('pdf.invoice', [
+                'booking' => $booking,
+                'nightGroups' => $this->groupNights($nightly, (float) $booking->room_total),
+            ])->setPaper('a4')->output();
+        } finally {
+            app()->setLocale($previous);
+        }
+    }
+
+    public function invoiceFilename(Booking $booking): string
+    {
+        return 'invoice-'.$booking->reference.'.pdf';
+    }
+
+    /**
+     * Group consecutive nights with the same rate into invoice lines.
+     * If the stored room total differs from today's rates (prices changed), a single line is used.
+     *
+     * @return array<int, array{from: string, to: string, nights: int, price: float, total: float}>
+     */
+    public function groupNights(array $nightly, ?float $roomTotal = null): array
+    {
+        $groups = [];
+        foreach ($nightly as $night) {
+            $last = array_key_last($groups);
+            if ($last !== null && abs($groups[$last]['price'] - $night['price']) < 0.01) {
+                $groups[$last]['nights']++;
+                $groups[$last]['to'] = $night['date'];
+                $groups[$last]['total'] = round($groups[$last]['total'] + $night['price'], 2);
+            } else {
+                $groups[] = ['from' => $night['date'], 'to' => $night['date'], 'nights' => 1, 'price' => (float) $night['price'], 'total' => (float) $night['price']];
+            }
+        }
+
+        $sum = array_sum(array_column($groups, 'total'));
+        if ($roomTotal !== null && $nightly && abs($sum - $roomTotal) > 0.01) {
+            $count = count($nightly);
+
+            return [[
+                'from' => $nightly[0]['date'],
+                'to' => $nightly[$count - 1]['date'],
+                'nights' => $count,
+                'price' => round($roomTotal / $count, 2),
+                'total' => $roomTotal,
+            ]];
+        }
+
+        return $groups;
+    }
+
+    /** iCalendar (.ics) event for the stay. */
+    public function ics(Booking $booking): string
+    {
+        $booking->loadMissing('roomType');
+        $esc = fn (string $v) => addcslashes(str_replace(["\r\n", "\n"], '\\n', $v), ',;\\');
+        $hotel = (string) Setting::get('hotel_name');
+        $lines = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Aurora Grand//Booking//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            'UID:'.$booking->reference.'@auroragrand.example',
+            'DTSTAMP:'.now()->utc()->format('Ymd\THis\Z'),
+            'DTSTART;VALUE=DATE:'.$booking->check_in->format('Ymd'),
+            'DTEND;VALUE=DATE:'.$booking->check_out->format('Ymd'),
+            'SUMMARY:'.$esc($hotel.' — '.$booking->roomType->name),
+            'LOCATION:'.$esc((string) Setting::localized('hotel_address')),
+            'DESCRIPTION:'.$esc(__('booking.ics_description', [
+                'reference' => $booking->reference,
+                'in' => Setting::get('check_in_time'),
+                'out' => Setting::get('check_out_time'),
+                'phone' => Setting::get('hotel_phone'),
+            ])),
+            'END:VEVENT',
+            'END:VCALENDAR',
+        ];
+
+        return implode("\r\n", $lines)."\r\n";
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureDemoDatabase;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -12,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(EnsureDemoDatabase::class);
         $middleware->web(append: [SetLocale::class]);
+        $middleware->validateCsrfTokens(except: ['demo/reset']);
         $middleware->encryptCookies(except: ['locale', 'theme']);
         // Vercel and similar platforms terminate TLS at a proxy.
         $middleware->trustProxies(at: '*');

@@ -38,7 +38,18 @@
             const t = localStorage.getItem('theme');
             if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
         } catch (e) {}
+        // Early image fallback (images can fail before the deferred app bundle runs; app.js handles later ones).
+        document.addEventListener('error', function (e) {
+            var img = e.target;
+            if (img.tagName !== 'IMG' || img.src.indexOf('data:') === 0 || img.hasAttribute('data-nofallback')) return;
+            img.dataset.fallback = '1';
+            img.removeAttribute('srcset');
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2633"/><stop offset=".6" stop-color="#3d2f19"/><stop offset="1" stop-color="#b8914a"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><text x="400" y="310" font-family="Georgia,serif" font-size="34" fill="#e7d3a6" text-anchor="middle" letter-spacing="6">AURORA GRAND</text></svg>');
+        }, true);
     </script>
+    @isset($schema)
+        <script type="application/ld+json">{!! $schema !!}</script>
+    @endisset
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @stack('head')

@@ -4,6 +4,7 @@
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
 @source '../../app/**/*.php';
+@source '../../vendor/livewire/livewire/src/Features/SupportPagination/views/*.blade.php';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -36,6 +37,22 @@
     --color-midnight-800: #121a24;
     --color-midnight-900: #0b1118;
     --color-midnight-950: #070b10;
+
+    --animate-fade-up: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-slow-zoom: slow-zoom 18s ease-out both;
+
+    @keyframes fade-up {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slow-zoom {
+        from { transform: scale(1.08); }
+        to { transform: scale(1); }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-up, .animate-slow-zoom { animation: none !important; }
 }
 
 :root {
@@ -97,6 +114,14 @@
     .prose-hotel h3 { @apply mt-6 mb-2 font-serif text-2xl; }
     .prose-hotel p { @apply mb-4 leading-relaxed text-muted; }
     .prose-hotel ul { @apply mb-4 list-disc space-y-1 pl-5 text-muted; }
+    .prose-hotel ol { @apply mb-4 list-decimal space-y-1 pl-5 text-muted; }
+    .prose-hotel li::marker { @apply text-gold-500; }
+    .prose-hotel h2 { @apply mt-10 mb-3 font-serif text-3xl text-ink; }
+    .prose-hotel h3 { @apply text-ink; }
+    .prose-hotel a { @apply text-gold-600 underline underline-offset-4 dark:text-gold-300; }
+    .prose-hotel strong { @apply font-semibold text-ink; }
+    .prose-hotel blockquote { @apply my-8 border-l-2 border-gold-400 pl-6 font-serif text-2xl italic leading-snug text-ink; }
+    .prose-hotel img { @apply my-8 w-full rounded-2xl; }
 
     /* Shown instead of an image that fails to load (see layout script). */
     .img-fallback { background: linear-gradient(135deg, #1b2633 0%, #3d2f19 55%, #b8914a 130%); }

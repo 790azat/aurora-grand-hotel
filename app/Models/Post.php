@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasLocalizedAttributes;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
@@ -23,7 +24,7 @@ class Post extends Model
         return 'slug';
     }
 
-    public function scopePublished(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopePublished(Builder $query): Builder
     {
         return $query->where('is_published', true)->where('published_at', '<=', now())->latest('published_at');
     }

@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Filament\Resources\PromoCodes;
+
+use App\Filament\Concerns\ManagerOnly;
+use App\Filament\NavGroup;
+use App\Filament\Resources\PromoCodes\Pages\CreatePromoCode;
+use App\Filament\Resources\PromoCodes\Pages\EditPromoCode;
+use App\Filament\Resources\PromoCodes\Pages\ListPromoCodes;
+use App\Filament\Resources\PromoCodes\Schemas\PromoCodeForm;
+use App\Filament\Resources\PromoCodes\Tables\PromoCodesTable;
+use App\Models\PromoCode;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use UnitEnum;
+
+class PromoCodeResource extends Resource
+{
+    use ManagerOnly;
+
+    protected static ?string $model = PromoCode::class;
+
+    protected static bool $hasTitleCaseModelLabel = false;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
+
+    protected static string|UnitEnum|null $navigationGroup = NavGroup::Pricing;
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $recordTitleAttribute = 'code';
+
+    protected static bool $isGloballySearchable = false;
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.models.promo_code.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.models.promo_code.plural');
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return PromoCodeForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return PromoCodesTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListPromoCodes::route('/'),
+            'create' => CreatePromoCode::route('/create'),
+            'edit' => EditPromoCode::route('/{record}/edit'),
+        ];
+    }
+}

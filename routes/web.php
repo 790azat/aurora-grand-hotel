@@ -3,6 +3,7 @@
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SeoController;
+use App\Http\Middleware\EnsureDemoDatabase;
 use App\Livewire;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -55,3 +56,11 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
     Route::livewire('/bookings/{booking:reference}', Livewire\Account\BookingShow::class)->name('bookings.show');
     Route::livewire('/profile', Livewire\Account\Profile::class)->name('profile');
 });
+
+// Demo maintenance: Vercel Cron calls this daily to restore fresh demo data.
+Route::get('/demo/reset', function () {
+    abort_unless(request()->bearerToken() === env('CRON_SECRET') && env('CRON_SECRET'), 403);
+    EnsureDemoDatabase::ensure(fresh: true);
+
+    return response()->json(['reset' => true]);
+})->name('demo.reset');

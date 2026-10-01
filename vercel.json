@@ -1,0 +1,20 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "framework": null,
+    "buildCommand": "npm run build",
+    "outputDirectory": "public",
+    "functions": {
+        "api/index.php": {
+            "runtime": "vercel-php@0.7.4",
+            "maxDuration": 60,
+            "excludeFiles": "{node_modules/**,tests/**,storage/logs/**,database/database.sqlite,resources/css/**,resources/js/**}"
+        }
+    },
+    "routes": [
+        { "handle": "filesystem" },
+        { "src": "/(.*)", "dest": "/api/index.php" }
+    ],
+    "crons": [
+        { "path": "/demo/reset", "schedule": "0 4 * * *" }
+    ]
+}
