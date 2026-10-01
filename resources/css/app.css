@@ -66,32 +66,33 @@
     ::selection { @apply bg-gold-300 text-midnight-900; }
 }
 
+@utility container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+@utility section { @apply py-16 sm:py-24; }
+@utility eyebrow { @apply text-xs font-semibold uppercase tracking-[0.25em] text-gold-500; }
+@utility h-display { @apply font-serif text-4xl leading-[1.05] sm:text-5xl lg:text-6xl; }
+@utility h-section { @apply font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl; }
+@utility lead { @apply text-base leading-relaxed text-muted sm:text-lg; }
+@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:cursor-not-allowed disabled:opacity-50; }
+@utility btn-gold { @apply btn bg-gold-500 text-white shadow-lg shadow-gold-500/20 hover:bg-gold-600; }
+@utility btn-dark { @apply btn bg-midnight-900 text-white hover:bg-midnight-800 dark:bg-gold-100 dark:text-midnight-900 dark:hover:bg-gold-200; }
+@utility btn-outline { @apply btn border border-line text-ink hover:border-gold-500 hover:text-gold-600 dark:hover:text-gold-300; }
+@utility btn-ghost-light { @apply btn border border-white/40 text-white backdrop-blur hover:bg-white/10; }
+@utility btn-sm { @apply px-4 py-2 text-xs; }
+@utility card { @apply rounded-2xl border border-line bg-surface shadow-sm; }
+@utility badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+@utility badge-gold { @apply badge bg-gold-100 text-gold-800 dark:bg-gold-900/60 dark:text-gold-200; }
+@utility badge-green { @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300; }
+@utility badge-red { @apply badge bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-300; }
+@utility badge-gray { @apply badge bg-elevated text-muted; }
+@utility label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted; }
+@utility input { @apply block w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink placeholder:text-muted/70 transition focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 focus:outline-none; }
+@utility input-error { @apply mt-1 text-xs text-rose-600 dark:text-rose-400; }
+@utility link { @apply text-gold-600 underline-offset-4 hover:underline dark:text-gold-300; }
+
 @layer components {
-    .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
-    .section { @apply py-16 sm:py-24; }
-    .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.25em] text-gold-500; }
-    .h-display { @apply font-serif text-4xl leading-[1.05] sm:text-5xl lg:text-6xl; }
-    .h-section { @apply font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl; }
-    .lead { @apply text-base leading-relaxed text-muted sm:text-lg; }
 
-    .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:cursor-not-allowed disabled:opacity-50; }
-    .btn-gold { @apply btn bg-gold-500 text-white shadow-lg shadow-gold-500/20 hover:bg-gold-600; }
-    .btn-dark { @apply btn bg-midnight-900 text-white hover:bg-midnight-800 dark:bg-gold-100 dark:text-midnight-900 dark:hover:bg-gold-200; }
-    .btn-outline { @apply btn border border-line text-ink hover:border-gold-500 hover:text-gold-600 dark:hover:text-gold-300; }
-    .btn-ghost-light { @apply btn border border-white/40 text-white backdrop-blur hover:bg-white/10; }
-    .btn-sm { @apply px-4 py-2 text-xs; }
 
-    .card { @apply rounded-2xl border border-line bg-surface shadow-sm; }
-    .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
-    .badge-gold { @apply badge bg-gold-100 text-gold-800 dark:bg-gold-900/60 dark:text-gold-200; }
-    .badge-green { @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300; }
-    .badge-red { @apply badge bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-300; }
-    .badge-gray { @apply badge bg-elevated text-muted; }
 
-    .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted; }
-    .input { @apply block w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink placeholder:text-muted/70 transition focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 focus:outline-none; }
-    .input-error { @apply mt-1 text-xs text-rose-600 dark:text-rose-400; }
-    .link { @apply text-gold-600 underline-offset-4 hover:underline dark:text-gold-300; }
 
     .prose-hotel h3 { @apply mt-6 mb-2 font-serif text-2xl; }
     .prose-hotel p { @apply mb-4 leading-relaxed text-muted; }
