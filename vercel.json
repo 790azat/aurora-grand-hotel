@@ -11,10 +11,26 @@
         }
     },
     "routes": [
-        { "handle": "filesystem" },
-        { "src": "/(.*)", "dest": "/api/index.php" }
+        {
+            "src": "/",
+            "dest": "/api/index.php"
+        },
+        {
+            "src": "/(.*\\.php|\\.htaccess)",
+            "dest": "/api/index.php"
+        },
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
+        }
     ],
     "crons": [
-        { "path": "/demo/reset", "schedule": "0 4 * * *" }
+        {
+            "path": "/demo/reset",
+            "schedule": "0 4 * * *"
+        }
     ]
 }
