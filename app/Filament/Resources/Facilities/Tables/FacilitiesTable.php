@@ -24,7 +24,7 @@ class FacilitiesTable
                     ->extraImgAttributes(['style' => 'border-radius:.5rem;object-fit:cover', 'loading' => 'lazy']),
                 TextColumn::make('name')->label(__('admin.fields.name'))->state(fn (Facility $f) => $f->name)->weight('semibold')
                     ->description(fn (Facility $f) => Str::limit($f->description, 80))->wrap()
-                    ->searchable(['name_en', 'name_ru']),
+                    ->searchable(['name_en', 'name_ru', 'name_hy']),
                 TextColumn::make('hours')->label(__('admin.fields.hours'))->icon('heroicon-o-clock')->placeholder('—'),
                 ToggleColumn::make('is_active')->label(__('admin.fields.is_active')),
             ])

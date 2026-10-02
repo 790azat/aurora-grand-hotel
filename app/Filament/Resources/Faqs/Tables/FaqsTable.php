@@ -21,7 +21,7 @@ class FaqsTable
             ->columns([
                 TextColumn::make('question')->label(__('admin.fields.question'))->state(fn (Faq $f) => $f->question)
                     ->description(fn (Faq $f) => Str::limit(strip_tags($f->answer), 110))->weight('semibold')->wrap()
-                    ->searchable(['question_en', 'question_ru', 'answer_en', 'answer_ru']),
+                    ->searchable(['question_en', 'question_ru', 'question_hy', 'answer_en', 'answer_ru', 'answer_hy']),
                 ToggleColumn::make('is_active')->label(__('admin.fields.is_active')),
             ])
             ->recordActions([EditAction::make()])

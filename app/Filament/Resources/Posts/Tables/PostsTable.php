@@ -27,7 +27,7 @@ class PostsTable
                     ->extraImgAttributes(['style' => 'border-radius:.5rem;object-fit:cover', 'loading' => 'lazy']),
                 TextColumn::make('title')->label(__('admin.fields.title'))->state(fn (Post $p) => $p->title)
                     ->description(fn (Post $p) => '/blog/'.$p->slug)->weight('semibold')->wrap()
-                    ->searchable(['title_en', 'title_ru', 'slug']),
+                    ->searchable(['title_en', 'title_ru', 'title_hy', 'slug']),
                 TextColumn::make('category')->label(__('admin.fields.category'))->formatStateUsing(fn ($state) => __('admin.post_category.'.$state))->badge()->color('gray'),
                 TextColumn::make('published_at')->label(__('admin.fields.published_at'))->date('d M Y')->sortable(),
                 ToggleColumn::make('is_published')->label(__('admin.fields.is_published')),

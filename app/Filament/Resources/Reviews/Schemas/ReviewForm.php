@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Reviews\Schemas;
 
+use App\Http\Middleware\SetLocale;
 use App\Models\RoomType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -40,7 +41,7 @@ class ReviewForm
                         TextInput::make('country')->label(__('admin.fields.country')),
                         Select::make('room_type_id')->label(__('admin.fields.room_type'))
                             ->options(fn () => RoomType::orderBy('sort')->get()->pluck('name', 'id'))->native(false),
-                        Select::make('locale')->label(__('admin.fields.language'))->options(['en' => 'English', 'ru' => 'Русский'])->default('en')->native(false)->required(),
+                        Select::make('locale')->label(__('admin.fields.language'))->options(SetLocale::LOCALES)->default('en')->native(false)->required(),
                         Toggle::make('is_approved')->label(__('admin.fields.is_approved')),
                     ]),
                 ])->columnSpan(['lg' => 1]),

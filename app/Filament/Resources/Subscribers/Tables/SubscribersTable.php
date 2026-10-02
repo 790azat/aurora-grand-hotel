@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Subscribers\Tables;
 
+use App\Http\Middleware\SetLocale;
 use App\Models\Subscriber;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -25,7 +26,7 @@ class SubscribersTable
                 TextColumn::make('created_at')->label(__('admin.fields.subscribed_at'))->date('d M Y')->sortable(),
             ])
             ->filters([
-                SelectFilter::make('locale')->label(__('admin.fields.language'))->options(['en' => 'English', 'ru' => 'Русский']),
+                SelectFilter::make('locale')->label(__('admin.fields.language'))->options(SetLocale::LOCALES),
             ])
             ->headerActions([
                 Action::make('export')

@@ -33,7 +33,7 @@ class RoomTypeForm
                         ->icon(Heroicon::OutlinedLanguage)
                         ->schema([
                             Ui::localeTabs(fn (string $l) => [
-                                TextInput::make("name_{$l}")->label(Ui::l('name', $l))->required()->maxLength(255)
+                                TextInput::make("name_{$l}")->label(Ui::l('name', $l))->required($l !== 'hy')->maxLength(255)
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function (Get $get, Set $set, ?string $state, string $operation) use ($l) {
                                         if ($l === 'en' && $operation === 'create' && blank($get('slug'))) {

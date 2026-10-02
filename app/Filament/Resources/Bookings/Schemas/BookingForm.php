@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Filament\Support\Ui;
+use App\Http\Middleware\SetLocale;
 use App\Models\Booking;
 use App\Models\Extra;
 use App\Models\PromoCode;
@@ -73,7 +74,7 @@ class BookingForm
                                 ->required(),
                             Select::make('locale')
                                 ->label(__('admin.fields.guest_language'))
-                                ->options(['en' => 'English', 'ru' => 'Русский'])
+                                ->options(SetLocale::LOCALES)
                                 ->default(fn () => app()->getLocale())
                                 ->native(false)
                                 ->required(),

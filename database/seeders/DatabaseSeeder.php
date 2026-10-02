@@ -37,7 +37,11 @@ class DatabaseSeeder extends Seeder
     {
         // Seeding confirms bookings; don't render/send confirmation emails for them.
         Mail::fake();
-        DB::transaction(fn () => $this->seed());
+        DB::transaction(function () {
+            $this->seed();
+            $this->translate('hy');
+            $this->call(ChatSeeder::class);
+        });
         Setting::put('demo_date', now()->toDateString());
     }
 
@@ -375,6 +379,27 @@ class DatabaseSeeder extends Seeder
 
         foreach (['alice@mail.example', 'bob@mail.example', 'olga@mail.example', 'kenji@mail.example'] as $email) {
             Subscriber::create(['email' => $email]);
+        }
+    }
+
+    /**
+     * Fills `{field}_{locale}` columns from database/seeders/content/{locale}.php,
+     * which maps "table.field" => [English text => translation].
+     */
+    protected function translate(string $locale): void
+    {
+        $models = [
+            'amenities' => Amenity::class, 'room_types' => RoomType::class, 'extras' => Extra::class,
+            'posts' => Post::class, 'offers' => Offer::class, 'facilities' => Facility::class,
+            'gallery_images' => GalleryImage::class, 'faqs' => Faq::class,
+        ];
+        $map = require __DIR__."/content/{$locale}.php";
+
+        foreach ($map as $key => $strings) {
+            [$table, $field] = explode('.', $key);
+            foreach ($strings as $en => $translated) {
+                $models[$table]::where("{$field}_en", $en)->update(["{$field}_{$locale}" => $translated]);
+            }
         }
     }
 }

@@ -31,6 +31,8 @@ class EnsureDemoDatabase
         'promo_codes' => ['valid_from', 'valid_until'],
         'offers' => ['valid_until'],
         'seasons' => ['starts_on', 'ends_on'],
+        'chat_conversations' => ['last_message_at', 'created_at', 'updated_at'],
+        'chat_messages' => ['read_at', 'created_at', 'updated_at'],
     ];
 
     public function handle(Request $request, Closure $next): Response
@@ -78,6 +80,9 @@ class EnsureDemoDatabase
         $pg = DB::getDriverName() === 'pgsql';
         DB::transaction(function () use ($days, $pg) {
             foreach (self::DATE_COLUMNS as $table => $columns) {
+                if (! Schema::hasTable($table)) {
+                    continue;
+                }
                 $sets = collect($columns)->map(fn ($c) => $pg
                     ? "\"{$c}\" = \"{$c}\" + interval '{$days} days'"
                     : "\"{$c}\" = CASE WHEN length(\"{$c}\") = 10 THEN date(\"{$c}\", '+{$days} days') ELSE datetime(\"{$c}\", '+{$days} days') END"

@@ -3,7 +3,7 @@
 namespace App\Models\Concerns;
 
 /**
- * Columns stored as `{field}_en` / `{field}_ru` are readable as `$model->field`
+ * Columns stored as `{field}_en` / `{field}_ru` / `{field}_hy` are readable as `$model->field`
  * in the current locale, falling back to English.
  */
 trait HasLocalizedAttributes

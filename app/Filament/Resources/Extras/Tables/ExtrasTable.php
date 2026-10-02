@@ -20,7 +20,7 @@ class ExtrasTable
             ->reorderable('sort')
             ->columns([
                 TextColumn::make('name')->label(__('admin.fields.name'))->state(fn (Extra $e) => $e->name)
-                    ->description(fn (Extra $e) => $e->description)->weight('semibold')->searchable(['name_en', 'name_ru']),
+                    ->description(fn (Extra $e) => $e->description)->weight('semibold')->searchable(['name_en', 'name_ru', 'name_hy']),
                 TextColumn::make('price')->label(__('admin.fields.price'))->money(Ui::currency())->sortable(),
                 TextColumn::make('pricing')->label(__('admin.fields.pricing'))->formatStateUsing(fn ($state) => __('admin.pricing.'.$state))->badge()->color('gray'),
                 ToggleColumn::make('is_active')->label(__('admin.fields.is_active')),

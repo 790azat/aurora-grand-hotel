@@ -74,7 +74,7 @@ class Ui
     }
 
     /**
-     * EN / RU tabs for translated fields.
+     * EN / RU / HY tabs for translated fields.
      *
      * @param  callable(string $locale): array  $fields
      */
@@ -84,6 +84,7 @@ class Ui
             ->tabs([
                 Tab::make('en')->label('English')->schema($fields('en')),
                 Tab::make('ru')->label('Русский')->schema($fields('ru')),
+                Tab::make('hy')->label('Հայերեն')->schema($fields('hy')),
             ])
             ->columnSpanFull();
     }

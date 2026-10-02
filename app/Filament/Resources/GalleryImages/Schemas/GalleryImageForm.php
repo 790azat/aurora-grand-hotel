@@ -22,6 +22,7 @@ class GalleryImageForm
                 Html::make(fn (Get $get) => view('filament.partials.image-preview', ['url' => $get('url')]))->columnSpanFull(),
                 TextInput::make('caption_en')->label(Ui::l('caption', 'en')),
                 TextInput::make('caption_ru')->label(Ui::l('caption', 'ru')),
+                TextInput::make('caption_hy')->label(Ui::l('caption', 'hy')),
                 Select::make('category')->label(__('admin.fields.category'))->options(Ui::options('gallery_category', self::CATEGORIES))->default('hotel')->required()->native(false),
                 TextInput::make('sort')->label(__('admin.fields.sort'))->numeric()->default(0),
             ]),

@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('chat_conversations', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('token')->unique();
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('locale', 5)->default('en');
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('status')->default('open'); // open, closed
+            $table->timestamp('last_message_at')->nullable()->index();
+            $table->timestamps();
+        });
+
+        Schema::create('chat_messages', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('chat_conversation_id')->constrained()->cascadeOnDelete();
+            $table->string('sender'); // guest, staff, bot
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->text('body');
+            $table->timestamp('read_at')->nullable();
+            $table->timestamps();
+            $table->index(['chat_conversation_id', 'id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('chat_messages');
+        Schema::dropIfExists('chat_conversations');
+    }
+};

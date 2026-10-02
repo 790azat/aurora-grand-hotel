@@ -26,7 +26,7 @@ class GalleryImagesTable
                 Stack::make([
                     ImageColumn::make('url')->label('')->height(150)->width('100%')
                         ->extraImgAttributes(['style' => 'border-radius:.6rem;object-fit:cover;width:100%;background:linear-gradient(135deg,#1e2a44,#b8914a)', 'loading' => 'lazy']),
-                    TextColumn::make('caption')->state(fn (GalleryImage $g) => $g->caption)->weight('semibold')->searchable(['caption_en', 'caption_ru']),
+                    TextColumn::make('caption')->state(fn (GalleryImage $g) => $g->caption)->weight('semibold')->searchable(['caption_en', 'caption_ru', 'caption_hy']),
                     TextColumn::make('category')->formatStateUsing(fn ($state) => __('admin.gallery_category.'.$state))->badge()->color('gray'),
                 ])->space(2),
             ])

@@ -1,12 +1,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+Armenian:wght@400;500;600;700&family=Noto+Serif+Armenian:wght@600;700&display=swap">
 <style>
+    /* Manrope has no Armenian glyphs; fall back to Noto for them. */
+    :root { --font-family: 'Manrope', 'Noto Sans Armenian', ui-sans-serif, system-ui, sans-serif; }
+
     /* ---------- Brand ---------- */
     .ag-brand { display: flex; align-items: center; gap: .65rem; height: 100%; }
     .ag-brand-mark { width: 2.25rem; height: 2.25rem; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgb(15 26 46 / .25)); }
     .dark .ag-brand-mark rect { stroke: rgb(227 201 143 / .45); stroke-width: 1; }
     .ag-brand-text { display: flex; flex-direction: column; line-height: 1; }
-    .ag-brand-name { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.35rem; letter-spacing: .01em; color: #0f1a2e; }
+    .ag-brand-name { font-family: 'Cormorant Garamond', 'Noto Serif Armenian', Georgia, serif; font-weight: 700; font-size: 1.35rem; letter-spacing: .01em; color: #0f1a2e; }
     .dark .ag-brand-name { color: #f3ead7; }
     .ag-brand-sub { font-size: .6rem; text-transform: uppercase; letter-spacing: .22em; color: var(--primary-600); margin-top: .2rem; font-weight: 600; }
     .dark .ag-brand-sub { color: var(--primary-400); }
@@ -91,4 +94,5 @@
     .ag-image-single img { width: 100%; height: 100%; object-fit: cover; }
 
     @include('filament.partials.tape-chart-styles')
+    @include('filament.partials.live-chat-styles')
 </style>

@@ -13,8 +13,8 @@
  * Semantic colors switch between light (ivory) and dark (midnight) themes.
  */
 @theme {
-    --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
-    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, serif;
+    --font-sans: 'Manrope', 'Noto Sans Armenian', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Cormorant Garamond', 'Noto Serif Armenian', ui-serif, Georgia, serif;
 
     --color-page: var(--c-page);
     --color-surface: var(--c-surface);

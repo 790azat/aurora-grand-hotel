@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Staff;
 use App\Filament\Concerns\AdminOnly;
 use App\Filament\NavGroup;
 use App\Filament\Support\Ui;
+use App\Http\Middleware\SetLocale;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -80,7 +81,7 @@ class StaffResource extends Resource
                     ->dehydrated(fn ($state) => filled($state))
                     ->minLength(8)
                     ->helperText(fn (string $operation) => $operation === 'edit' ? __('admin.staff.password_hint') : null),
-                Select::make('locale')->label(__('admin.fields.language'))->options(['en' => 'English', 'ru' => 'Русский'])->default('en')->native(false),
+                Select::make('locale')->label(__('admin.fields.language'))->options(SetLocale::LOCALES)->default('en')->native(false),
             ]),
         ]);
     }

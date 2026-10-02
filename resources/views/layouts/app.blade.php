@@ -32,7 +32,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230b1118'/><text x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23cba65a' text-anchor='middle'>A</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Armenian:wght@400;500;600;700&family=Noto+Serif+Armenian:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         try {
             const t = localStorage.getItem('theme');
@@ -67,7 +67,9 @@
                 <span class="text-[10px] font-semibold tracking-[0.42em] text-gold-400">GRAND · ★★★★★</span>
             </a>
 
-            <nav class="hidden items-center gap-6 text-sm font-medium lg:flex" aria-label="Main">
+            {{-- Russian and Armenian labels are longer: switch to the burger menu below xl. --}}
+            @php($longNav = app()->getLocale() !== 'en')
+            <nav class="hidden items-center gap-5 text-sm font-medium whitespace-nowrap 2xl:gap-6 {{ $longNav ? 'xl:flex' : 'lg:flex' }}" aria-label="Main">
                 @foreach ($nav as $item)
                     <a href="{{ route($item['route']) }}" wire:navigate
                        class="transition hover:text-gold-400 {{ request()->routeIs($item['route'].'*') ? 'text-gold-400' : '' }}">{{ $item['label'] }}</a>
@@ -101,7 +103,7 @@
 
                 <a href="{{ route('booking') }}" wire:navigate class="btn-gold btn-sm hidden sm:inline-flex">{{ __('site.book_now') }}</a>
 
-                <button @click="open = !open" class="rounded-full p-2 lg:hidden" :aria-expanded="open" aria-label="Menu">
+                <button @click="open = !open" class="rounded-full p-2 {{ $longNav ? 'xl:hidden' : 'lg:hidden' }}" :aria-expanded="open" aria-label="Menu">
                     <svg x-show="!open" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" d="M3.75 7h16.5M3.75 12h16.5M3.75 17h16.5"/></svg>
                     <svg x-show="open" x-cloak class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
                 </button>
@@ -109,7 +111,7 @@
         </div>
 
         {{-- Mobile menu --}}
-        <div x-show="open" x-cloak x-transition.opacity class="border-t border-line bg-page lg:hidden">
+        <div x-show="open" x-cloak x-transition.opacity class="border-t border-line bg-page {{ $longNav ? 'xl:hidden' : 'lg:hidden' }}">
             <nav class="container-x flex flex-col py-4 text-ink">
                 @foreach ($nav as $item)
                     <a href="{{ route($item['route']) }}" wire:navigate class="border-b border-line/60 py-3 font-serif text-xl">{{ $item['label'] }}</a>
@@ -172,10 +174,10 @@
         </div>
     </footer>
 
-    {{-- WhatsApp quick contact --}}
-    <a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank" rel="noopener" class="fixed right-5 bottom-5 z-40 grid size-14 place-items-center rounded-full bg-emerald-500 text-white shadow-xl transition hover:scale-105" aria-label="WhatsApp">
-        <svg class="size-7" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3ZM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>
-    </a>
+    {{-- Live chat (persists across wire:navigate page changes) --}}
+    @persist('chat')
+        <livewire:chat-widget />
+    @endpersist
 
     {{-- Toasts: dispatch('notify', message: '...', type: 'success'|'error') --}}
     <div x-data="{ toasts: [] }"

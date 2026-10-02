@@ -16,8 +16,8 @@ class FaqForm
         return $schema->components([
             Section::make()->columnSpanFull()->schema([
                 Ui::localeTabs(fn (string $l) => [
-                    TextInput::make("question_{$l}")->label(Ui::l('question', $l))->required()->maxLength(255),
-                    Textarea::make("answer_{$l}")->label(Ui::l('answer', $l))->required()->rows(5),
+                    TextInput::make("question_{$l}")->label(Ui::l('question', $l))->required($l !== 'hy')->maxLength(255),
+                    Textarea::make("answer_{$l}")->label(Ui::l('answer', $l))->required($l !== 'hy')->rows(5),
                 ]),
             ]),
             Section::make()->columns(2)->columnSpanFull()->schema([

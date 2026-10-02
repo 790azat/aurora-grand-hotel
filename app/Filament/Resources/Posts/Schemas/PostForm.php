@@ -29,7 +29,7 @@ class PostForm
                 Group::make([
                     Section::make()->schema([
                         Ui::localeTabs(fn (string $l) => [
-                            TextInput::make("title_{$l}")->label(Ui::l('title', $l))->required()->maxLength(255)
+                            TextInput::make("title_{$l}")->label(Ui::l('title', $l))->required($l !== 'hy')->maxLength(255)
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function (Get $get, Set $set, ?string $state, string $operation) use ($l) {
                                     if ($l === 'en' && $operation === 'create' && blank($get('slug'))) {

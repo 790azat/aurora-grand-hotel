@@ -17,7 +17,7 @@ class ExtraForm
         return $schema->components([
             Section::make()->columnSpanFull()->schema([
                 Ui::localeTabs(fn (string $l) => [
-                    TextInput::make("name_{$l}")->label(Ui::l('name', $l))->required()->maxLength(255),
+                    TextInput::make("name_{$l}")->label(Ui::l('name', $l))->required($l !== 'hy')->maxLength(255),
                     TextInput::make("description_{$l}")->label(Ui::l('description', $l))->maxLength(255),
                 ]),
             ]),

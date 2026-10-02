@@ -32,7 +32,7 @@ class RoomTypesTable
                     ->state(fn (RoomType $r) => $r->name)
                     ->description(fn (RoomType $r) => $r->short)
                     ->weight('semibold')
-                    ->searchable(['name_en', 'name_ru']),
+                    ->searchable(['name_en', 'name_ru', 'name_hy']),
                 TextColumn::make('base_price')->label(__('admin.fields.base_price'))->money(Ui::currency())->sortable(),
                 TextColumn::make('weekend_price')->label(__('admin.fields.weekend_price'))->money(Ui::currency())->toggleable(),
                 TextColumn::make('max_adults')->label(__('admin.fields.capacity'))

@@ -202,7 +202,7 @@
                     @if ($idramLive)
                         {{-- Live: hand the guest over to Idram's checkout; Idram calls back /payments/idram/result. --}}
                         <form method="POST" action="{{ config('services.idram.url') }}" class="mt-6">
-                            <input type="hidden" name="EDP_LANGUAGE" value="{{ app()->getLocale() === 'ru' ? 'RU' : 'EN' }}">
+                            <input type="hidden" name="EDP_LANGUAGE" value="{{ ['ru' => 'RU', 'hy' => 'AM'][app()->getLocale()] ?? 'EN' }}">
                             <input type="hidden" name="EDP_REC_ACCOUNT" value="{{ config('services.idram.account') }}">
                             <input type="hidden" name="EDP_DESCRIPTION" value="{{ setting('hotel_name') }} · {{ $b->reference }}">
                             <input type="hidden" name="EDP_AMOUNT" value="{{ $amd }}">

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Guests;
 
 use App\Filament\NavGroup;
 use App\Filament\Support\Ui;
+use App\Http\Middleware\SetLocale;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\EditAction;
@@ -85,7 +86,7 @@ class GuestResource extends Resource
                 TextInput::make('email')->label(__('admin.fields.email'))->email()->required()->unique(ignoreRecord: true),
                 TextInput::make('phone')->label(__('admin.fields.phone'))->tel()->telRegex('/^[0-9+\-\s().]{5,}$/'),
                 TextInput::make('country')->label(__('admin.fields.country')),
-                Select::make('locale')->label(__('admin.fields.language'))->options(['en' => 'English', 'ru' => 'Русский'])->default('en')->native(false),
+                Select::make('locale')->label(__('admin.fields.language'))->options(SetLocale::LOCALES)->default('en')->native(false),
                 TextInput::make('password')->label(__('admin.fields.password'))->password()->revealable()
                     ->required(fn (string $operation) => $operation === 'create')
                     ->dehydrated(fn ($state) => filled($state))->minLength(8)

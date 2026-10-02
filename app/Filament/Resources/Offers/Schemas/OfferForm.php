@@ -24,7 +24,7 @@ class OfferForm
             ->components([
                 Section::make()->schema([
                     Ui::localeTabs(fn (string $l) => [
-                        TextInput::make("title_{$l}")->label(Ui::l('title', $l))->required()->maxLength(255),
+                        TextInput::make("title_{$l}")->label(Ui::l('title', $l))->required($l !== 'hy')->maxLength(255),
                         TextInput::make("badge_{$l}")->label(Ui::l('badge', $l))->maxLength(40),
                         Textarea::make("description_{$l}")->label(Ui::l('description', $l))->rows(5),
                     ]),

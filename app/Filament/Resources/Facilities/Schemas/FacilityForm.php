@@ -21,7 +21,7 @@ class FacilityForm
             ->components([
                 Section::make()->schema([
                     Ui::localeTabs(fn (string $l) => [
-                        TextInput::make("name_{$l}")->label(Ui::l('name', $l))->required()->maxLength(255),
+                        TextInput::make("name_{$l}")->label(Ui::l('name', $l))->required($l !== 'hy')->maxLength(255),
                         Textarea::make("description_{$l}")->label(Ui::l('description', $l))->rows(6),
                     ]),
                 ])->columnSpan(['lg' => 2]),
