@@ -217,7 +217,7 @@ class DatabaseSeeder extends Seeder
                 default => mt_rand(1, 100) <= 85 ? 'confirmed' : (mt_rand(0, 1) ? 'pending' : 'cancelled'),
             };
             $extraIds = $extras->random(mt_rand(0, 3))->pluck('id')->mapWithKeys(fn ($id) => [$id => 1])->all();
-            $method = mt_rand(1, 100) <= 70 ? 'card' : 'on_arrival';
+            $method = mt_rand(1, 100) <= 55 ? 'card' : (mt_rand(1, 100) <= 45 ? 'idram' : 'on_arrival');
             $created = $checkIn->subDays(mt_rand(3, 60))->setTime(mt_rand(7, 22), mt_rand(0, 59));
 
             $booking = $service->create($type, [
@@ -235,11 +235,11 @@ class DatabaseSeeder extends Seeder
                 'locale' => mt_rand(0, 1) ? 'en' : 'ru',
             ], $extraIds, mt_rand(1, 100) <= 12 ? 'WELCOME10' : null);
 
-            $paid = in_array($status, ['checked_out', 'checked_in'], true) || ($method === 'card' && $status === 'confirmed');
+            $paid = in_array($status, ['checked_out', 'checked_in'], true) || ($method !== 'on_arrival' && $status === 'confirmed');
             $booking->forceFill([
                 'status' => $status,
-                'payment_status' => $status === 'cancelled' ? ($method === 'card' ? 'refunded' : 'unpaid') : ($paid ? 'paid' : 'unpaid'),
-                'amount_paid' => $paid || ($status === 'cancelled' && $method === 'card') ? $booking->total : 0,
+                'payment_status' => $status === 'cancelled' ? ($method !== 'on_arrival' ? 'refunded' : 'unpaid') : ($paid ? 'paid' : 'unpaid'),
+                'amount_paid' => $paid || ($status === 'cancelled' && $method !== 'on_arrival') ? $booking->total : 0,
                 'confirmed_at' => $status !== 'pending' ? $created->addMinutes(5) : null,
                 'cancelled_at' => $status === 'cancelled' ? $created->addDays(2) : null,
                 'checked_in_at' => in_array($status, ['checked_in', 'checked_out'], true) ? $checkIn->setTime(15, 10) : null,
@@ -252,9 +252,12 @@ class DatabaseSeeder extends Seeder
             }
             if ($paid) {
                 $booking->payments()->create([
-                    'amount' => $booking->total, 'method' => $method === 'card' ? 'card' : 'cash', 'status' => 'succeeded',
-                    'transaction_id' => 'demo_'.substr(md5((string) $booking->id), 0, 14),
-                    'card_brand' => $method === 'card' ? 'Visa' : null, 'card_last4' => $method === 'card' ? (string) mt_rand(1000, 9999) : null,
+                    'amount' => $booking->total, 'method' => $method === 'on_arrival' ? 'cash' : $method, 'status' => 'succeeded',
+                    'transaction_id' => ($method === 'idram' ? 'idram_' : 'demo_').substr(md5((string) $booking->id), 0, 14),
+                    'card_brand' => match ($method) {
+                        'card' => 'Visa', 'idram' => 'Idram', default => null
+                    },
+                    'card_last4' => $method === 'on_arrival' ? null : (string) mt_rand(1000, 9999),
                     'created_at' => $created->addMinutes(5), 'updated_at' => $created->addMinutes(5),
                 ]);
             }
@@ -346,7 +349,7 @@ class DatabaseSeeder extends Seeder
             ['Do you offer airport transfers?', 'Есть ли трансфер из аэропорта?', 'Yes, a private Mercedes transfer costs $60 one way. Presidential Suite guests enjoy complimentary limousine service.', 'Да, индивидуальный трансфер на Mercedes — $60 в одну сторону. Для гостей Президентского люкса — бесплатно на лимузине.'],
             ['Are pets allowed?', 'Можно ли с животными?', 'Small pets up to 8 kg are welcome in Classic Rooms and Beach Villas for $30 per night.', 'Небольшие питомцы до 8 кг допускаются в Классических номерах и Пляжных виллах за $30 за ночь.'],
             ['Is there parking?', 'Есть ли парковка?', 'Secure underground parking is available for $15 per night. EV charging stations included.', 'Охраняемая подземная парковка — $15 за ночь, есть зарядки для электромобилей.'],
-            ['Which payment methods do you accept?', 'Какие способы оплаты?', 'We accept Visa, Mastercard, American Express and cash. You can prepay online or pay at the hotel.', 'Принимаем Visa, Mastercard, American Express и наличные. Можно оплатить онлайн или в отеле.'],
+            ['Which payment methods do you accept?', 'Какие способы оплаты?', 'We accept Visa, Mastercard, American Express, Idram and cash. You can prepay online or pay at the hotel.', 'Принимаем Visa, Mastercard, American Express, Idram и наличные. Можно оплатить онлайн или в отеле.'],
         ];
         foreach ($faqs as $i => $f) {
             Faq::create(['question_en' => $f[0], 'question_ru' => $f[1], 'answer_en' => $f[2], 'answer_ru' => $f[3], 'sort' => $i]);

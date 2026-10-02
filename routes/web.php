@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IdramController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SeoController;
@@ -64,3 +65,8 @@ Route::get('/demo/reset', function () {
 
     return response()->json(['reset' => true]);
 })->name('demo.reset');
+
+// Idram payment gateway callbacks (live mode only; see IdramController).
+Route::post('/payments/idram/result', [IdramController::class, 'result'])->name('idram.result');
+Route::match(['get', 'post'], '/payments/idram/success', [IdramController::class, 'success'])->name('idram.success');
+Route::match(['get', 'post'], '/payments/idram/fail', [IdramController::class, 'fail'])->name('idram.fail');

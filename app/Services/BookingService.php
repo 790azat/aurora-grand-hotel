@@ -277,6 +277,46 @@ class BookingService
         return $payment;
     }
 
+    /** Idram charges in AMD: booking balance converted with the `idram_amd_rate` setting. */
+    public function idramAmount(Booking $booking): int
+    {
+        return (int) round($booking->balance * (float) Setting::get('idram_amd_rate', 390));
+    }
+
+    public function idramLive(): bool
+    {
+        return filled(config('services.idram.account')) && filled(config('services.idram.secret'));
+    }
+
+    /**
+     * Record an Idram payment for the booking's balance (demo wallet or a confirmed Idram callback).
+     * Demo wallet 100000000 simulates insufficient funds.
+     */
+    public function payIdram(Booking $booking, string $wallet, ?string $transactionId = null): Payment
+    {
+        $wallet = preg_replace('/\D/', '', $wallet);
+        $declined = $transactionId === null && $wallet === '100000000';
+        $amount = $booking->balance;
+
+        $payment = $booking->payments()->create([
+            'amount' => $amount,
+            'method' => 'idram',
+            'status' => $declined ? 'failed' : 'succeeded',
+            'transaction_id' => $transactionId ?? 'idram_demo_'.Str::lower(Str::random(10)),
+            'card_brand' => 'Idram',
+            'card_last4' => substr($wallet, -4) ?: null,
+        ]);
+
+        if (! $declined) {
+            $this->registerPayment($booking, $amount);
+            if ($booking->status === 'pending') {
+                $this->confirm($booking);
+            }
+        }
+
+        return $payment;
+    }
+
     public function registerPayment(Booking $booking, float $amount): void
     {
         $paid = round((float) $booking->amount_paid + $amount, 2);

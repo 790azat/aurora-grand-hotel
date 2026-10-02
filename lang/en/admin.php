@@ -55,7 +55,7 @@ return [
         'no_show' => 'No-show',
     ],
     'payment_status' => ['unpaid' => 'Unpaid', 'paid' => 'Paid', 'refunded' => 'Refunded'],
-    'payment_method' => ['card' => 'Card', 'on_arrival' => 'Pay at hotel', 'cash' => 'Cash', 'bank_transfer' => 'Bank transfer'],
+    'payment_method' => ['card' => 'Card', 'idram' => 'Idram', 'on_arrival' => 'Pay at hotel', 'cash' => 'Cash', 'bank_transfer' => 'Bank transfer'],
     'payment_result' => ['succeeded' => 'Succeeded', 'failed' => 'Declined', 'refunded' => 'Refunded'],
     'source' => [
         'website' => 'Website',
@@ -436,6 +436,7 @@ return [
         'currency' => 'Currency code',
         'currency_symbol' => 'Currency symbol',
         'tax_percent' => 'Tax',
+        'idram_amd_rate' => 'Idram rate (AMD per 1 USD)',
         'check_in_time' => 'Check-in from',
         'check_out_time' => 'Check-out until',
         'free_cancellation_hours' => 'Free cancellation',

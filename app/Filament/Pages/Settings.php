@@ -94,6 +94,7 @@ class Settings extends Page
                                 $text('currency')->required()->maxLength(3)->helperText('ISO 4217, e.g. USD'),
                                 $text('currency_symbol')->required()->maxLength(4),
                                 $text('tax_percent')->numeric()->minValue(0)->maxValue(50)->suffix('%')->required(),
+                                $text('idram_amd_rate')->numeric()->minValue(1)->prefix('1 USD =')->suffix('AMD')->required(),
                                 TimePicker::make('check_in_time')->label(__('admin.settings.check_in_time'))->seconds(false)->format('H:i')->native(false)->required(),
                                 TimePicker::make('check_out_time')->label(__('admin.settings.check_out_time'))->seconds(false)->format('H:i')->native(false)->required(),
                                 $text('free_cancellation_hours')->numeric()->minValue(0)->suffix(__('admin.settings.hours'))->required(),

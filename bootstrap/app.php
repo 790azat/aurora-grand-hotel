@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(EnsureDemoDatabase::class);
         $middleware->web(append: [SetLocale::class]);
-        $middleware->validateCsrfTokens(except: ['demo/reset']);
+        $middleware->validateCsrfTokens(except: ['demo/reset', 'payments/idram/*']);
         $middleware->encryptCookies(except: ['locale', 'theme']);
         // Vercel and similar platforms terminate TLS at a proxy.
         $middleware->trustProxies(at: '*');

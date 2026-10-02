@@ -128,6 +128,9 @@ return [
     'pay_card_text' => 'Secure instant payment — your booking is confirmed right away.',
     'pay_hotel' => 'Pay at the hotel',
     'pay_hotel_text' => 'No prepayment. Your room is guaranteed and you pay on arrival.',
+    'pay_idram' => 'Pay with Idram',
+    'pay_idram_text' => 'Pay from your Idram wallet in Armenian drams, confirmed instantly.',
+    'submit_idram' => 'Continue to Idram · :amount',
     'demo' => 'Demo',
     'cancellation_policy' => 'Free cancellation up to :hours hours before arrival (check-in day, 14:00). Later cancellations and no-shows are charged the first night.',
     'submit_card' => 'Continue to payment · :amount',
@@ -197,6 +200,7 @@ return [
     ],
     'payment_methods' => [
         'card' => 'Card',
+        'idram' => 'Idram',
         'on_arrival' => 'Pay at the hotel',
         'cash' => 'Cash',
         'bank_transfer' => 'Bank transfer',
@@ -208,6 +212,24 @@ return [
     ],
 
     // Payment page
+    'idram' => [
+        'title' => 'Pay with Idram',
+        'subtitle' => 'The amount is charged in Armenian drams from your Idram wallet.',
+        'amount' => 'Amount to pay',
+        'rate' => 'rate 1 USD = :rate AMD',
+        'wallet' => 'Idram wallet ID',
+        'wallet_hint' => 'The 9-digit ID shown in your Idram app.',
+        'invalid_wallet' => 'Enter your 9-digit Idram wallet ID.',
+        'demo_text' => 'Use wallet :ok to pay successfully. Wallet :fail simulates insufficient funds.',
+        'fill_test' => 'Fill demo wallet',
+        'fill_decline' => 'Wallet without funds',
+        'pay' => 'Pay :amount with Idram',
+        'continue' => 'Continue to Idram · :amount',
+        'waiting' => 'Waiting for confirmation in Idram…',
+        'insufficient' => 'Idram declined the payment: insufficient funds in the wallet.',
+        'failed' => 'The Idram payment was not completed. Please try again.',
+    ],
+
     'pay' => [
         'meta_title' => 'Secure payment',
         'pay_to' => 'Pay :hotel',
@@ -234,6 +256,7 @@ return [
         'too_many' => 'Too many payment attempts. Please try again in :seconds seconds.',
         'no_charge' => 'Demo checkout — your card will not be charged.',
         'pay_later' => 'Pay later',
+        'method_label' => 'Payment method',
     ],
 
     // Confirmation page

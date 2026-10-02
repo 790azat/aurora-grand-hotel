@@ -55,7 +55,7 @@ return [
         'no_show' => 'Неявка',
     ],
     'payment_status' => ['unpaid' => 'Не оплачено', 'paid' => 'Оплачено', 'refunded' => 'Возврат'],
-    'payment_method' => ['card' => 'Карта', 'on_arrival' => 'Оплата в отеле', 'cash' => 'Наличные', 'bank_transfer' => 'Банковский перевод'],
+    'payment_method' => ['card' => 'Карта', 'idram' => 'Idram', 'on_arrival' => 'Оплата в отеле', 'cash' => 'Наличные', 'bank_transfer' => 'Банковский перевод'],
     'payment_result' => ['succeeded' => 'Успешно', 'failed' => 'Отклонён', 'refunded' => 'Возвращён'],
     'source' => [
         'website' => 'Сайт',
@@ -436,6 +436,7 @@ return [
         'currency' => 'Код валюты',
         'currency_symbol' => 'Символ валюты',
         'tax_percent' => 'Налог',
+        'idram_amd_rate' => 'Курс Idram (AMD за 1 USD)',
         'check_in_time' => 'Заезд с',
         'check_out_time' => 'Выезд до',
         'free_cancellation_hours' => 'Бесплатная отмена',

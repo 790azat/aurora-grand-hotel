@@ -48,7 +48,7 @@
 
                                 <div class="mt-auto flex flex-wrap gap-2 pt-5">
                                     <a href="{{ route('account.bookings.show', $next) }}" wire:navigate class="btn-dark btn-sm">{{ __('account.dashboard.manage') }}</a>
-                                    @if ($next->payment_method === 'card' && $next->balance > 0 && in_array($next->status, ['pending', 'confirmed'], true))
+                                    @if (in_array($next->payment_method, ['card', 'idram'], true) && $next->balance > 0 && in_array($next->status, ['pending', 'confirmed'], true))
                                         <a href="{{ route('booking.pay', $next) }}" class="btn-gold btn-sm">{{ __('booking.pay_now_amount', ['amount' => money($next->balance, true)]) }}</a>
                                     @endif
                                 </div>

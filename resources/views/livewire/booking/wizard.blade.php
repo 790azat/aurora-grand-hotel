@@ -444,15 +444,15 @@
                 </div>
 
                 <h3 class="mt-8 font-serif text-2xl">{{ __('booking.payment_title') }}</h3>
-                <div class="mt-4 grid gap-4 sm:grid-cols-2" role="radiogroup" aria-label="{{ __('booking.payment_title') }}">
-                    @foreach (['card' => ['credit-card', __('booking.pay_card'), __('booking.pay_card_text')], 'on_arrival' => ['building', __('booking.pay_hotel'), __('booking.pay_hotel_text')]] as $value => [$icon, $label, $text])
+                <div class="mt-4 grid gap-4 md:grid-cols-3" role="radiogroup" aria-label="{{ __('booking.payment_title') }}">
+                    @foreach (['card' => ['credit-card', __('booking.pay_card'), __('booking.pay_card_text')], 'idram' => ['wallet', __('booking.pay_idram'), __('booking.pay_idram_text')], 'on_arrival' => ['building', __('booking.pay_hotel'), __('booking.pay_hotel_text')]] as $value => [$icon, $label, $text])
                         <label wire:key="pm-{{ $value }}" class="card relative flex cursor-pointer gap-4 p-5 transition hover:shadow-md {{ $payment_method === $value ? 'border-gold-400 ring-2 ring-gold-400/70' : '' }}">
                             <input type="radio" wire:model.live="payment_method" value="{{ $value }}" class="sr-only">
                             <span class="grid size-11 shrink-0 place-items-center rounded-xl {{ $payment_method === $value ? 'bg-gold-400 text-midnight-900' : 'bg-elevated text-gold-600 dark:text-gold-300' }}">
                                 @include('livewire.booking.partials.icon', ['name' => $icon, 'class' => 'size-6'])
                             </span>
-                            <span>
-                                <span class="flex items-center gap-2 font-semibold">{{ $label }} @if ($value === 'card')<span class="badge-gold">{{ __('booking.demo') }}</span>@endif</span>
+                            <span class="min-w-0 pr-6">
+                                <span class="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold">{{ $label }} @if ($value !== 'on_arrival')<span class="badge-gold">{{ __('booking.demo') }}</span>@endif</span>
                                 <span class="mt-1 block text-xs text-muted">{{ $text }}</span>
                             </span>
                             <span class="absolute top-4 right-4 grid size-5 place-items-center rounded-full border-2 {{ $payment_method === $value ? 'border-gold-500' : 'border-line' }}">
@@ -472,7 +472,7 @@
                     <button type="button" wire:click="book" wire:loading.attr="disabled" wire:target="book" class="btn-gold px-8 py-4 text-base">
                         <svg wire:loading wire:target="book" class="size-5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".3" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
                         <span wire:loading.remove wire:target="book">
-                            {{ $payment_method === 'card' ? __('booking.submit_card', ['amount' => money($quote['total'] ?? 0, true)]) : __('booking.submit_hotel') }}
+                            {{ $payment_method === 'card' ? __('booking.submit_card', ['amount' => money($quote['total'] ?? 0, true)]) : ($payment_method === 'idram' ? __('booking.submit_idram', ['amount' => money($quote['total'] ?? 0, true)]) : __('booking.submit_hotel')) }}
                         </span>
                         <span wire:loading wire:target="book">{{ __('booking.creating') }}</span>
                     </button>

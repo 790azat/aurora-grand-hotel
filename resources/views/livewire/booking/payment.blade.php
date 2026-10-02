@@ -2,6 +2,9 @@
     $b = $booking;
     $fmt = fn ($d, $f = 'D, j M Y') => \Illuminate\Support\Carbon::parse($d)->translatedFormat($f);
     $amount = $b->balance;
+    $svc = app(\App\Services\BookingService::class);
+    $amd = $svc->idramAmount($b);
+    $idramLive = $svc->idramLive();
 @endphp
 
 <div class="min-h-[calc(100vh-4.5rem)] bg-page">
@@ -52,6 +55,23 @@
         {{-- Card form (right) --}}
         <section class="bg-surface">
             <div class="mx-auto w-full max-w-xl px-4 py-10 sm:px-8 lg:mr-auto lg:ml-0 lg:py-16 lg:pl-16">
+                {{-- Payment method tabs --}}
+                <div class="grid grid-cols-2 gap-2 rounded-2xl bg-elevated p-1.5" role="tablist" aria-label="{{ __('booking.pay.method_label') }}">
+                    @foreach (['card' => ['credit-card', __('booking.payment_methods.card')], 'idram' => ['wallet', 'Idram']] as $value => [$icon, $label])
+                        <button type="button" role="tab" wire:click="setMethod('{{ $value }}')" aria-selected="{{ $method === $value ? 'true' : 'false' }}"
+                                class="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition {{ $method === $value ? 'bg-surface text-ink shadow-sm ring-1 ring-gold-400/60' : 'text-muted hover:text-ink' }}">
+                            @if ($value === 'idram')
+                                <span class="grid size-6 place-items-center rounded-md bg-[#f26f21] text-[11px] font-extrabold text-white">i</span>
+                            @else
+                                @include('livewire.booking.partials.icon', ['name' => $icon, 'class' => 'size-5'])
+                            @endif
+                            {{ $label }}
+                        </button>
+                    @endforeach
+                </div>
+
+                @if ($method === 'card')
+                <div class="mt-6">
                 {{-- Demo notice --}}
                 <div class="rounded-2xl border border-gold-300 bg-gold-50 p-4 text-sm text-gold-900 dark:border-gold-700 dark:bg-gold-900/25 dark:text-gold-100">
                     <p class="flex items-center gap-2 text-xs font-bold tracking-[0.2em] uppercase">
@@ -138,6 +158,85 @@
                         <p class="mt-1 text-xs text-muted">{{ __('booking.pay.dont_close') }}</p>
                     </div>
                 </form>
+                </div>
+                @else
+                <div class="mt-6">
+                    @if (! $idramLive)
+                        <div class="rounded-2xl border border-gold-300 bg-gold-50 p-4 text-sm text-gold-900 dark:border-gold-700 dark:bg-gold-900/25 dark:text-gold-100">
+                            <p class="flex items-center gap-2 text-xs font-bold tracking-[0.2em] uppercase">
+                                @include('livewire.booking.partials.icon', ['name' => 'info', 'class' => 'size-4'])
+                                {{ __('booking.pay.demo_title') }}
+                            </p>
+                            <p class="mt-2 leading-relaxed">{!! __('booking.idram.demo_text', ['ok' => '<code class="rounded bg-white/70 px-1.5 py-0.5 font-mono text-xs dark:bg-black/30">100200300</code>', 'fail' => '<code class="rounded bg-white/70 px-1.5 py-0.5 font-mono text-xs dark:bg-black/30">100000000</code>']) !!}</p>
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button type="button" wire:click="fillIdramWallet" class="btn-dark btn-sm">
+                                    @include('livewire.booking.partials.icon', ['name' => 'sparkles', 'class' => 'size-4']) {{ __('booking.idram.fill_test') }}
+                                </button>
+                                <button type="button" wire:click="fillIdramWallet(true)" class="btn-outline btn-sm">{{ __('booking.idram.fill_decline') }}</button>
+                            </div>
+                        </div>
+                    @endif
+
+                    <h1 class="mt-8 font-sans text-xl font-semibold">{{ __('booking.idram.title') }}</h1>
+                    <p class="mt-1 text-sm text-muted">{{ __('booking.idram.subtitle') }}</p>
+
+                    <div class="mt-5 flex items-center justify-between gap-4 rounded-2xl border border-line bg-elevated/60 p-5">
+                        <div>
+                            <p class="text-xs font-semibold tracking-wider text-muted uppercase">{{ __('booking.idram.amount') }}</p>
+                            <p class="mt-1 font-serif text-3xl font-semibold tabular-nums">{{ number_format($amd, 0, '.', ' ') }} ֏</p>
+                            <p class="mt-1 text-xs text-muted">≈ {{ money($amount, true) }} · {{ __('booking.idram.rate', ['rate' => setting('idram_amd_rate')]) }}</p>
+                        </div>
+                        <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-[#f26f21] font-serif text-3xl font-bold text-white" aria-hidden="true">i</span>
+                    </div>
+
+                    @if ($declined)
+                        <div class="mt-4 flex items-start gap-3 rounded-xl border border-rose-300 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200" role="alert">
+                            @include('livewire.booking.partials.icon', ['name' => 'warning', 'class' => 'size-5 shrink-0'])
+                            <div>
+                                <p class="font-semibold">{{ __('booking.pay.declined_title') }}</p>
+                                <p class="mt-0.5">{{ $declined }}</p>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($idramLive)
+                        {{-- Live: hand the guest over to Idram's checkout; Idram calls back /payments/idram/result. --}}
+                        <form method="POST" action="{{ config('services.idram.url') }}" class="mt-6">
+                            <input type="hidden" name="EDP_LANGUAGE" value="{{ app()->getLocale() === 'ru' ? 'RU' : 'EN' }}">
+                            <input type="hidden" name="EDP_REC_ACCOUNT" value="{{ config('services.idram.account') }}">
+                            <input type="hidden" name="EDP_DESCRIPTION" value="{{ setting('hotel_name') }} · {{ $b->reference }}">
+                            <input type="hidden" name="EDP_AMOUNT" value="{{ $amd }}">
+                            <input type="hidden" name="EDP_BILL_NO" value="{{ $b->reference }}">
+                            <input type="hidden" name="EDP_EMAIL" value="{{ $b->email }}">
+                            <button type="submit" class="btn w-full rounded-xl bg-[#f26f21] py-4 text-base text-white shadow-lg hover:brightness-110">
+                                {{ __('booking.idram.continue', ['amount' => number_format($amd, 0, '.', ' ').' ֏']) }}
+                            </button>
+                        </form>
+                    @else
+                        <form wire:submit="payIdram" class="relative mt-6" novalidate>
+                            <label for="idram_wallet" class="label">{{ __('booking.idram.wallet') }}</label>
+                            <input id="idram_wallet" type="text" inputmode="numeric" placeholder="100 200 300" wire:model="idram_wallet" x-mask="999999999"
+                                   class="input font-mono text-[15px] tracking-wider @error('idram_wallet') border-rose-400 @enderror">
+                            @error('idram_wallet') <p class="input-error">{{ $message }}</p> @enderror
+                            <p class="mt-2 text-xs text-muted">{{ __('booking.idram.wallet_hint') }}</p>
+
+                            <button type="submit" wire:loading.attr="disabled" wire:target="payIdram" class="btn mt-7 w-full rounded-xl bg-[#f26f21] py-4 text-base text-white shadow-lg hover:brightness-110">
+                                <span wire:loading.remove wire:target="payIdram">{{ __('booking.idram.pay', ['amount' => number_format($amd, 0, '.', ' ').' ֏']) }}</span>
+                                <span wire:loading.flex wire:target="payIdram" class="items-center gap-2">
+                                    <svg class="size-5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".3" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                                    {{ __('booking.idram.waiting') }}
+                                </span>
+                            </button>
+
+                            <div wire:loading.flex wire:target="payIdram" class="absolute inset-0 z-10 flex-col items-center justify-center rounded-2xl bg-surface/85 text-center backdrop-blur-sm">
+                                <svg class="size-10 animate-spin text-[#f26f21]" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".2" stroke-width="2.5"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+                                <p class="mt-4 font-semibold">{{ __('booking.idram.waiting') }}</p>
+                                <p class="mt-1 text-xs text-muted">{{ __('booking.pay.dont_close') }}</p>
+                            </div>
+                        </form>
+                    @endif
+                </div>
+                @endif
 
                 <p class="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted">
                     @include('livewire.booking.partials.icon', ['name' => 'shield', 'class' => 'size-4 text-emerald-600'])

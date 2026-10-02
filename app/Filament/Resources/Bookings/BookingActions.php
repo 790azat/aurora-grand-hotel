@@ -132,7 +132,7 @@ class BookingActions
                     ->required(),
                 Select::make('method')
                     ->label(__('admin.fields.payment_method'))
-                    ->options(Ui::options('payment_method', ['card', 'cash', 'bank_transfer']))
+                    ->options(Ui::options('payment_method', ['card', 'idram', 'cash', 'bank_transfer']))
                     ->native(false)
                     ->required(),
                 TextInput::make('transaction_id')

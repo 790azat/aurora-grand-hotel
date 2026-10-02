@@ -23,6 +23,7 @@ class Setting extends Model
         'currency' => 'USD',
         'currency_symbol' => '$',
         'tax_percent' => '10',
+        'idram_amd_rate' => '390',
         'check_in_time' => '14:00',
         'check_out_time' => '12:00',
         'free_cancellation_hours' => '48',

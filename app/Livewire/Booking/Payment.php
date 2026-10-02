@@ -5,6 +5,7 @@ namespace App\Livewire\Booking;
 use App\Models\Booking;
 use App\Services\BookingService;
 use Illuminate\Support\Facades\RateLimiter;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class Payment extends Component
@@ -21,6 +22,12 @@ class Payment extends Component
 
     public ?string $declined = null;
 
+    /** Selected method tab: card or idram. */
+    #[Url]
+    public string $method = '';
+
+    public string $idram_wallet = '';
+
     public function mount(Booking $booking, BookingService $service)
     {
         $this->booking = $booking;
@@ -34,6 +41,69 @@ class Payment extends Component
         }
 
         $this->card_name = $booking->guest_name;
+
+        if (! in_array($this->method, ['card', 'idram'], true)) {
+            $this->method = $booking->payment_method === 'idram' ? 'idram' : 'card';
+        }
+    }
+
+    public function setMethod(string $method): void
+    {
+        $this->method = in_array($method, ['card', 'idram'], true) ? $method : 'card';
+        $this->declined = null;
+        $this->resetErrorBag();
+    }
+
+    /** Demo Idram wallet payment (live Idram posts the form straight to Idram instead). */
+    public function payIdram(BookingService $service)
+    {
+        $this->declined = null;
+        $booking = $this->booking->fresh();
+
+        if (! $service->canAccess($booking)) {
+            return $this->denied();
+        }
+        if ($booking->status === 'cancelled' || $booking->balance <= 0) {
+            return $this->redirectRoute('booking.confirmation', $booking);
+        }
+
+        $this->validate(
+            ['idram_wallet' => ['required', 'regex:/^\d{9}$/']],
+            ['idram_wallet.regex' => __('booking.idram.invalid_wallet')],
+        );
+
+        $key = 'demo-pay:'.$booking->id;
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+            $this->declined = __('booking.pay.too_many', ['seconds' => RateLimiter::availableIn($key)]);
+
+            return null;
+        }
+        RateLimiter::hit($key, 300);
+
+        usleep(1_200_000);
+
+        $payment = $service->payIdram($booking, $this->idram_wallet);
+
+        if ($payment->status !== 'succeeded') {
+            $this->declined = __('booking.idram.insufficient');
+
+            return null;
+        }
+
+        if ($booking->payment_method !== 'idram') {
+            $booking->update(['payment_method' => 'idram']);
+        }
+
+        session()->flash('payment_success', true);
+
+        return $this->redirectRoute('booking.confirmation', $booking);
+    }
+
+    public function fillIdramWallet(bool $decline = false): void
+    {
+        $this->resetErrorBag();
+        $this->declined = null;
+        $this->idram_wallet = $decline ? '100000000' : '100200300';
     }
 
     protected function denied()
@@ -98,6 +168,10 @@ class Payment extends Component
             $this->card_cvc = '';
 
             return null;
+        }
+
+        if ($booking->payment_method !== 'card') {
+            $booking->update(['payment_method' => 'card']);
         }
 
         session()->flash('payment_success', true);

@@ -29,7 +29,7 @@ class Ui
 
     public const PAYMENT_COLORS = ['unpaid' => 'warning', 'paid' => 'success', 'refunded' => 'gray'];
 
-    public const PAYMENT_METHODS = ['card', 'on_arrival', 'cash', 'bank_transfer'];
+    public const PAYMENT_METHODS = ['card', 'idram', 'on_arrival', 'cash', 'bank_transfer'];
 
     public const ROOM_STATUS_COLORS = ['available' => 'success', 'maintenance' => 'warning', 'out_of_order' => 'danger'];
 

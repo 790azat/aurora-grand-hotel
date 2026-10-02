@@ -14,6 +14,14 @@ return [
     |
     */
 
+    // Idram (Armenian e-wallet). When account + secret are set, real Idram checkout is used;
+    // otherwise the site shows a demo Idram payment flow.
+    'idram' => [
+        'account' => env('IDRAM_ACCOUNT'),
+        'secret' => env('IDRAM_SECRET_KEY'),
+        'url' => env('IDRAM_PAYMENT_URL', 'https://banking.idram.am/Payment/GetPayment'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

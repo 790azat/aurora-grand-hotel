@@ -1,6 +1,6 @@
 @php
     $b = $booking;
-    $state = $b->status === 'cancelled' ? 'cancelled' : ($b->status === 'pending' && $b->payment_method === 'card' && $b->balance > 0 ? 'awaiting' : 'confirmed');
+    $state = $b->status === 'cancelled' ? 'cancelled' : ($b->status === 'pending' && in_array($b->payment_method, ['card', 'idram'], true) && $b->balance > 0 ? 'awaiting' : 'confirmed');
 @endphp
 
 <div>

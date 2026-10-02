@@ -306,7 +306,7 @@ class Wizard extends Component
             $this->step = 3;
             throw $e;
         }
-        $this->validate(['payment_method' => ['required', Rule::in(['card', 'on_arrival'])]]);
+        $this->validate(['payment_method' => ['required', Rule::in(['card', 'idram', 'on_arrival'])]]);
 
         $user = Auth::user();
 
@@ -358,8 +358,8 @@ class Wizard extends Component
 
         $service->rememberAccess($booking);
 
-        return $booking->payment_method === 'card'
-            ? $this->redirectRoute('booking.pay', $booking)
+        return in_array($booking->payment_method, ['card', 'idram'], true)
+            ? $this->redirectRoute('booking.pay', ['booking' => $booking, 'method' => $booking->payment_method])
             : $this->redirectRoute('booking.confirmation', $booking);
     }
 
